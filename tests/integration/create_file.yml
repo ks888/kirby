@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    var1: v1
+  tasks:
+    - template: src=sample_template.conf dest=./sample.conf
