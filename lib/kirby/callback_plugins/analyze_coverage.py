@@ -1,4 +1,5 @@
 
+
 class CallbackModule(object):
     """Plugin for analyzing task coverage"""
 
