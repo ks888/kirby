@@ -15,7 +15,12 @@ class ServerspecRunner(object):
     def run(self):
         orig_dir = os.getcwd()
         os.chdir(self.serverspec_dir)
-        cmd_result = subprocess.check_output(self.serverspec_cmd)
+
+        try:
+            cmd_result = subprocess.check_output(self.serverspec_cmd, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as ex:
+            cmd_result = ex.output
+
         os.chdir(orig_dir)
 
         match_result = ServerspecRunner.pattern.search(cmd_result)
