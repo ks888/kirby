@@ -1,17 +1,25 @@
 
+import os
+
 from kirby.serverspec_runner import ServerspecRunner
+from kirby.setting_manager import SettingManager
 
 
 class CallbackModule(object):
     """Plugin for analyzing task coverage"""
 
     def playbook_on_start(self):
-        self.runner = ServerspecRunner('.', '')
+        config_file = os.environ.get('KIRBY_CONFIG', None)
+        self.setting_manager = SettingManager(config_file)
 
-        result = self.runner.run()
+        if self.setting_manager.enable_kirby:
+            self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
+                                           self.setting_manager.serverspec_cmd)
 
-        self.num_tests = result[0]
-        self.num_failed_tests = result[1]
+            result = self.runner.run()
+
+            self.num_tests = result[0]
+            self.num_failed_tests = result[1]
 
     def playbook_on_setup(self):
         print "playbook_on_setup"
