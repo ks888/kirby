@@ -11,17 +11,19 @@ class CallbackModule(object):
     """Plugin for analyzing task coverage"""
 
     def __init__(self):
-        self.num_changed_tasks = 0
-        self.num_tested_tasks = 0
-        self.not_tested_tasks = []
-
-    def playbook_on_start(self):
         config_file = os.environ.get('KIRBY_CONFIG', None)
         self.setting_manager = SettingManager(config_file)
 
         if self.setting_manager.enable_kirby:
             self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
                                            self.setting_manager.serverspec_cmd)
+
+            self.num_changed_tasks = 0
+            self.num_tested_tasks = 0
+            self.not_tested_tasks = []
+
+    def playbook_on_start(self):
+        if self.setting_manager.enable_kirby:
             result = self.runner.run()
 
             self.num_tests = result[0]
@@ -38,8 +40,6 @@ class CallbackModule(object):
     def runner_on_ok(self, host, res):
         if self.setting_manager.enable_kirby:
             if res['changed']:
-                self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
-                                               self.setting_manager.serverspec_cmd)
                 result = self.runner.run()
 
                 self.num_changed_tasks += 1
