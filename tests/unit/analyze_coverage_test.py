@@ -29,3 +29,12 @@ class AnalyzeCoverageTest(unittest.TestCase):
         callbacks.playbook_on_task_start('it\'s me', False)
 
         self.assertEqual(callbacks.curr_task_name, 'it\'s me')
+
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
+    @patch('subprocess.check_output', return_value='2 examples, 2 failures')
+    def test_playbook_on_setup(self, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_setup()
+
+        self.assertEqual(callbacks.curr_task_name, 'setup')

@@ -22,7 +22,8 @@ class CallbackModule(object):
             self.num_failed_tests = result[1]
 
     def playbook_on_setup(self):
-        print "playbook_on_setup"
+        if self.setting_manager.enable_kirby:
+            self.curr_task_name = 'setup'
 
     def playbook_on_task_start(self, name, is_conditional):
         if self.setting_manager.enable_kirby:
