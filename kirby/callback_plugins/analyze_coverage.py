@@ -71,13 +71,19 @@ class CallbackModule(object):
         if self.setting_manager.enable_kirby:
             display('*** Kirby Results ***')
 
-            coverage = self.num_tested_tasks * 100.0 / self.num_changed_tasks
-            display('Coverage: %d / %d (%.1f%%)' % (self.num_tested_tasks, self.num_changed_tasks, coverage))
+            if self.num_changed_tasks > 0:
+                coverage = self.num_tested_tasks * 100.0 / self.num_changed_tasks
+            else:
+                coverage = 0.0
+            display('Coverage   : %.0f%% (%d of %d tasks are tested)' % (coverage, self.num_tested_tasks, self.num_changed_tasks))
 
             if self.num_tested_tasks < self.num_changed_tasks:
-                display('Not tested tasks:')
+                display('Not covered:')
                 for task_name in self.not_tested_tasks:
-                    display('- %s' % (task_name))
+                    display(' - %s' % (task_name))
 
-            display('serverspec results: %d / %d' % (self.num_failed_tests, self.num_tests))
-            display('*** End ***')
+            if self.num_failed_tests != 0:
+                display('')
+                display('WARNING: serverspec still detects %d failures' % (self.num_failed_tests))
+
+            display('*** Kirby End *******')
