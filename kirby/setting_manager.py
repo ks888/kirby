@@ -18,15 +18,13 @@ class SettingManager(object):
         if value:
             return value
 
-        if self.parser:
-            try:
-                value = self.parser.get(section, option)
-            except ConfigParser.NoOptionError:
-                # don't worry, use default value
-                pass
-
-            if value:
-                return value
+        try:
+            value = self.parser.get(section, option)
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+            # don't worry, use default value
+            pass
+        if value:
+            return value
 
         return default
 

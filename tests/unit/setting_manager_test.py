@@ -18,6 +18,12 @@ class SettingManagerTest(unittest.TestCase):
         self.assertIsNone(setting_manager.serverspec_dir, None)
         self.assertIsNone(setting_manager.serverspec_cmd, None)
 
+    def test_init_use_no_setting_file(self):
+        setting_manager = SettingManager()
+        self.assertEqual(setting_manager.enable_kirby, False)
+        self.assertIsNone(setting_manager.serverspec_dir, None)
+        self.assertIsNone(setting_manager.serverspec_cmd, None)
+
     @patch.dict('os.environ',
                 {'KIRBY_ENABLE': 'no', 'KIRBY_SERVERSPEC_DIR': 'env_var1', 'KIRBY_SERVERSPEC_CMD': 'env_var2'})
     def test_init_use_envvar(self):
