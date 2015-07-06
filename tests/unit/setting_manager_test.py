@@ -4,8 +4,13 @@ import unittest
 
 from kirby.setting_manager import SettingManager
 
+import utils
+
 
 class SettingManagerTest(unittest.TestCase):
+    def setUp(self):
+        utils.reset_kirby_env_vars()
+
     def test_init_use_setting_file(self):
         setting_manager = SettingManager('./sample.conf')
         self.assertEqual(setting_manager.enable_kirby, True)

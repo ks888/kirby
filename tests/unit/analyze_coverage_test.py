@@ -4,9 +4,13 @@ from mock import patch
 import unittest
 
 from kirby.callback_plugins.analyze_coverage import CallbackModule
+import utils
 
 
 class AnalyzeCoverageTest(unittest.TestCase):
+    def setUp(self):
+        utils.reset_kirby_env_vars()
+
     @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def test_playbook_on_start(self, mock_subprocess):
