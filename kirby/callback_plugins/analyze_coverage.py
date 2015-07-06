@@ -30,7 +30,14 @@ class CallbackModule(object):
             self.curr_task_name = name
 
     def runner_on_ok(self, host, res):
-        print "runner_on_ok"
+        if self.setting_manager.enable_kirby:
+            if res['changed']:
+                self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
+                                               self.setting_manager.serverspec_cmd)
+                result = self.runner.run()
+
+                self.num_tests = result[0]
+                self.num_failed_tests = result[1]
 
     def playbook_on_stats(self, stats):
         print "playbook_on_stats"
