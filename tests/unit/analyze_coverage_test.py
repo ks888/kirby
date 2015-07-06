@@ -49,3 +49,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertEqual(callbacks.num_tests, 2)
         self.assertEqual(callbacks.num_failed_tests, 1)
+
+        self.assertEqual(callbacks.num_changed_tasks, 1)
+        self.assertEqual(callbacks.num_tested_tasks, 1)

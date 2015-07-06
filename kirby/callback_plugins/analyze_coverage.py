@@ -18,6 +18,9 @@ class CallbackModule(object):
 
             result = self.runner.run()
 
+            self.num_changed_tasks = 0
+            self.num_tested_tasks = 0
+
             self.num_tests = result[0]
             self.num_failed_tests = result[1]
 
@@ -35,6 +38,10 @@ class CallbackModule(object):
                 self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
                                                self.setting_manager.serverspec_cmd)
                 result = self.runner.run()
+
+                self.num_changed_tasks += 1
+                if result[1] < self.num_failed_tests:
+                    self.num_tested_tasks += 1
 
                 self.num_tests = result[0]
                 self.num_failed_tests = result[1]
