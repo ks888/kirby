@@ -1,6 +1,7 @@
 
 from StringIO import StringIO
 from mock import patch
+import os
 import unittest
 
 from kirby.callback_plugins.analyze_coverage import CallbackModule
@@ -10,6 +11,16 @@ import utils
 class AnalyzeCoverageTest(unittest.TestCase):
     def setUp(self):
         utils.reset_kirby_env_vars()
+
+    @patch.dict('os.environ',
+                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': 'env_var1'})
+    def test_init_invalid_options(self):
+        devnull = open(os.devnull, 'w')
+        with patch('sys.stdout', devnull):
+            with patch('sys.stderr', devnull):
+                callbacks = CallbackModule()
+
+        self.assertFalse(callbacks.setting_manager.enable_kirby)
 
     @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')

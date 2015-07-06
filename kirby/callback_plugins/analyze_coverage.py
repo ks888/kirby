@@ -14,6 +14,10 @@ class CallbackModule(object):
         config_file = os.environ.get('KIRBY_CONFIG', None)
         self.setting_manager = SettingManager(config_file)
 
+        if self.setting_manager.enable_kirby and not self._check_options():
+            display('[kirby] disable kirby...', stderr=True)
+            self.setting_manager.enable_kirby = False
+
         if self.setting_manager.enable_kirby:
             self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
                                            self.setting_manager.serverspec_cmd)
@@ -21,6 +25,18 @@ class CallbackModule(object):
             self.num_changed_tasks = 0
             self.num_tested_tasks = 0
             self.not_tested_tasks = []
+
+    def _check_options(self):
+        manager = self.setting_manager
+        if not hasattr(manager, 'serverspec_dir') or not manager.serverspec_dir:
+            display("[kirby] 'serverspec_dir' is not correctly defined")
+            return False
+
+        if not hasattr(manager, 'serverspec_cmd') or not manager.serverspec_cmd:
+            display("[kirby] 'serverspec_cmd' is not correctly defined")
+            return False
+
+        return True
 
     def playbook_on_start(self):
         if self.setting_manager.enable_kirby:
