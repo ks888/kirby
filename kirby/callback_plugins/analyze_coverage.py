@@ -20,6 +20,7 @@ class CallbackModule(object):
 
             self.num_changed_tasks = 0
             self.num_tested_tasks = 0
+            self.not_tested_tasks = []
 
             self.num_tests = result[0]
             self.num_failed_tests = result[1]
@@ -42,6 +43,8 @@ class CallbackModule(object):
                 self.num_changed_tasks += 1
                 if result[1] < self.num_failed_tests:
                     self.num_tested_tasks += 1
+                else:
+                    self.not_tested_tasks += [self.curr_task_name]
 
                 self.num_tests = result[0]
                 self.num_failed_tests = result[1]
