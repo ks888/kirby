@@ -7,7 +7,7 @@ from kirby.callback_plugins.analyze_coverage import CallbackModule
 
 class AnalyzeCoverageTest(unittest.TestCase):
     @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
-    @patch('subprocess.check_output', return_value="2 examples, 2 failures")
+    @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def test_playbook_on_start(self, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
@@ -20,3 +20,12 @@ class AnalyzeCoverageTest(unittest.TestCase):
         callbacks.playbook_on_start()
 
         self.assertEqual(callbacks.setting_manager.enable_kirby, False)
+
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
+    @patch('subprocess.check_output', return_value='2 examples, 2 failures')
+    def test_playbook_on_task_start(self, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_task_start('it\'s me', False)
+
+        self.assertEqual(callbacks.curr_task_name, 'it\'s me')

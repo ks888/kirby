@@ -24,11 +24,12 @@ class CallbackModule(object):
     def playbook_on_setup(self):
         print "playbook_on_setup"
 
+    def playbook_on_task_start(self, name, is_conditional):
+        if self.setting_manager.enable_kirby:
+            self.curr_task_name = name
+
     def runner_on_ok(self, host, res):
         print "runner_on_ok"
-
-    def playbook_on_task_start(self, name, is_conditional):
-        print name
 
     def playbook_on_stats(self, stats):
         print "playbook_on_stats"
