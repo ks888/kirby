@@ -1,4 +1,5 @@
 
+from StringIO import StringIO
 from mock import patch
 import unittest
 
@@ -67,3 +68,17 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_changed_tasks, 1)
         self.assertEqual(callbacks.num_tested_tasks, 0)
         self.assertListEqual(callbacks.not_tested_tasks, ['it\'s me'])
+
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_playbook_on_stats(self, mock_stdout, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_task_start('it\'s me', False)
+        callbacks.runner_on_ok('localhost', {'changed': True})
+        callbacks.playbook_on_stats(None)
+
+        result = mock_stdout.getvalue()
+        # 1 of 1 changed task is tested
+        self.assertIn('100', result)

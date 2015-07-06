@@ -1,4 +1,6 @@
 
+import ansible.utils  # unused, but necessary to avoid circular imports
+from ansible.callbacks import display
 import os
 
 from kirby.serverspec_runner import ServerspecRunner
@@ -50,4 +52,16 @@ class CallbackModule(object):
                 self.num_failed_tests = result[1]
 
     def playbook_on_stats(self, stats):
-        print "playbook_on_stats"
+        if self.setting_manager.enable_kirby:
+            display('*** Kirby Results ***')
+
+            coverage = self.num_tested_tasks * 100.0 / self.num_changed_tasks
+            display('Coverage: %d / %d (%.1f%%)' % (self.num_tested_tasks, self.num_changed_tasks, coverage))
+
+            if self.num_tested_tasks < self.num_changed_tasks:
+                display('Not tested tasks:')
+                for task_name in self.not_tested_tasks:
+                    display('- %s' % (task_name))
+
+            display('serverspec results: %d / %d' % (self.num_failed_tests, self.num_tests))
+            display('*** End ***')
