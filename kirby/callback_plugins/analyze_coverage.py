@@ -12,6 +12,9 @@ class CallbackModule(object):
 
     def __init__(self):
         config_file = os.environ.get('KIRBY_CONFIG', None)
+        if config_file is None:
+            config_file = os.getcwd() + '/kirby.cfg'
+
         self.setting_manager = SettingManager(config_file)
 
         if self.setting_manager.enable_kirby and not self._check_options():

@@ -6,7 +6,7 @@ import os
 class SettingManager(object):
     def __init__(self, setting_file=None):
         self.parser = ConfigParser.SafeConfigParser()
-        if setting_file:
+        if setting_file is not None:
             self.parser.read(setting_file)
 
         self.enable_kirby = self._mk_boolean(self._get_config('defaults', 'enable_kirby', 'KIRBY_ENABLE', 'false'))

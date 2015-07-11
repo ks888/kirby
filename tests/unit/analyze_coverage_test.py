@@ -22,8 +22,7 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertTrue(callbacks.setting_manager.enable_kirby)
 
-    @patch.dict('os.environ',
-                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': ''})
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './empty.cfg'})
     def test_init_not_enough_options(self):
         devnull = open(os.devnull, 'w')
         with patch('sys.stdout', devnull):
@@ -31,6 +30,12 @@ class AnalyzeCoverageTest(unittest.TestCase):
                 callbacks = CallbackModule()
 
         self.assertFalse(callbacks.setting_manager.enable_kirby)
+
+    def test_init_use_default_config_file(self):
+        # default config file (kirby.cfg) will be used
+        callbacks = CallbackModule()
+
+        self.assertTrue(callbacks.setting_manager.enable_kirby)
 
     @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
@@ -51,6 +56,7 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertFalse(callbacks.setting_manager.enable_kirby)
 
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './empty.cfg'})
     def test_playbook_on_start_use_default_values(self):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
