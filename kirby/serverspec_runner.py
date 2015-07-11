@@ -6,7 +6,7 @@ import subprocess
 
 class ServerspecRunner(object):
     """Run serverspec command and retrieve its results"""
-    pattern = re.compile(r'(\d+) examples, (\d+) failures')
+    pattern = re.compile(r'(\d+) examples, (\d+) failures?')
 
     def __init__(self, serverspec_dir, serverspec_cmd):
         self.serverspec_dir = serverspec_dir
