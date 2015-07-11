@@ -41,6 +41,16 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_tests, 2)
         self.assertEqual(callbacks.num_failed_tests, 2)
 
+    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
+    @patch('subprocess.check_output', return_value='')
+    def test_playbook_on_start_cmd_output_is_empty(self, mock_subprocess):
+        devnull = open(os.devnull, 'w')
+        with patch('sys.stderr', devnull):
+            callbacks = CallbackModule()
+            callbacks.playbook_on_start()
+
+        self.assertFalse(callbacks.setting_manager.enable_kirby)
+
     def test_playbook_on_start_use_default_values(self):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()

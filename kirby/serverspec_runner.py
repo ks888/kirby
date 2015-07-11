@@ -24,6 +24,9 @@ class ServerspecRunner(object):
         os.chdir(orig_dir)
 
         match_result = ServerspecRunner.pattern.search(cmd_result)
+        if match_result is None:
+            return None
+
         num_test = int(match_result.group(1))
         num_failed_test = int(match_result.group(2))
 

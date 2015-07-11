@@ -42,6 +42,11 @@ class CallbackModule(object):
         if self.setting_manager.enable_kirby:
             result = self.runner.run()
 
+            if result is None:
+                display('[kirby] serverspec\'s result is unexpected...disable kirby', stderr=True)
+                self.setting_manager.enable_kirby = False
+                return
+
             self.num_tests = result[0]
             self.num_failed_tests = result[1]
 

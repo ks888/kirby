@@ -22,6 +22,12 @@ class ServerspecRunnerTest(unittest.TestCase):
         self.assertTupleEqual(result, (1, 1))
 
     @patch('subprocess.check_output',
+           side_effect=subprocess.CalledProcessError(1, '', output=""))
+    def test_run_empty_output(self, mock):
+        result = self.runner.run()
+        self.assertIsNone(result)
+
+    @patch('subprocess.check_output',
            side_effect=subprocess.CalledProcessError(1, '', output="100 examples, 99 failures"))
     def test_run_100tests(self, mock):
         result = self.runner.run()
