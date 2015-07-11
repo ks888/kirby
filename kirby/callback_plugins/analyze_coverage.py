@@ -28,11 +28,11 @@ class CallbackModule(object):
 
     def _check_options(self):
         manager = self.setting_manager
-        if not hasattr(manager, 'serverspec_dir') or not manager.serverspec_dir:
+        if not hasattr(manager, 'serverspec_dir') or manager.serverspec_dir is None:
             display("[kirby] 'serverspec_dir' is not correctly defined")
             return False
 
-        if not hasattr(manager, 'serverspec_cmd') or not manager.serverspec_cmd:
+        if not hasattr(manager, 'serverspec_cmd') or manager.serverspec_cmd is None:
             display("[kirby] 'serverspec_cmd' is not correctly defined")
             return False
 

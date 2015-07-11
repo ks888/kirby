@@ -13,8 +13,18 @@ class AnalyzeCoverageTest(unittest.TestCase):
         utils.reset_kirby_env_vars()
 
     @patch.dict('os.environ',
-                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': 'env_var1'})
-    def test_init_invalid_options(self):
+                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': '', 'KIRBY_SERVERSPEC_CMD': ''})
+    def test_init_empty_env_var(self):
+        devnull = open(os.devnull, 'w')
+        with patch('sys.stdout', devnull):
+            with patch('sys.stderr', devnull):
+                callbacks = CallbackModule()
+
+        self.assertTrue(callbacks.setting_manager.enable_kirby)
+
+    @patch.dict('os.environ',
+                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': ''})
+    def test_init_not_enough_options(self):
         devnull = open(os.devnull, 'w')
         with patch('sys.stdout', devnull):
             with patch('sys.stderr', devnull):

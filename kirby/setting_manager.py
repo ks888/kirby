@@ -15,15 +15,15 @@ class SettingManager(object):
 
     def _get_config(self, section, option, env_var, default):
         value = os.environ.get(env_var, None)
-        if value:
+        if value is not None:
             return value
 
         try:
             value = self.parser.get(section, option)
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
-            # don't worry, use default value
+            # use default value
             pass
-        if value:
+        if value is not None:
             return value
 
         return default
