@@ -37,7 +37,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertTrue(callbacks.setting_manager.enable_kirby)
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def test_playbook_on_start(self, mock_subprocess):
         callbacks = CallbackModule()
@@ -46,7 +45,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_tests, 2)
         self.assertEqual(callbacks.num_failed_tests, 2)
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='')
     def test_playbook_on_start_cmd_output_is_empty(self, mock_subprocess):
         devnull = open(os.devnull, 'w')
@@ -63,7 +61,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertEqual(callbacks.setting_manager.enable_kirby, False)
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def test_playbook_on_task_start(self, mock_subprocess):
         callbacks = CallbackModule()
@@ -72,7 +69,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertEqual(callbacks.curr_task_name, 'it\'s me')
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def test_playbook_on_setup(self, mock_subprocess):
         callbacks = CallbackModule()
@@ -81,7 +77,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertEqual(callbacks.curr_task_name, 'setup')
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
     def test_runner_on_ok_tested_case(self, mock_subprocess):
         callbacks = CallbackModule()
@@ -95,7 +90,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_changed_tasks, 1)
         self.assertEqual(callbacks.num_tested_tasks, 1)
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 2 failures'])
     def test_runner_on_ok_not_tested_case(self, mock_subprocess):
         callbacks = CallbackModule()
@@ -110,7 +104,6 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_tested_tasks, 0)
         self.assertListEqual(callbacks.not_tested_tasks, ['it\'s me'])
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './sample.conf'})
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
     @patch('sys.stdout', new_callable=StringIO)
     def test_playbook_on_stats(self, mock_stdout, mock_subprocess):
