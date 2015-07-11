@@ -13,7 +13,6 @@ def step_impl(context):
 
 @given(u'env var is used instead of config file')
 def step_impl(context):
-    del os.environ['KIRBY_CONFIG']
     os.environ['KIRBY_ENABLE'] = 'yes'
     os.environ['KIRBY_SERVERSPEC_DIR'] = './'
     os.environ['KIRBY_SERVERSPEC_CMD'] = 'bundle exec rake spec'
