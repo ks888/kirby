@@ -1,4 +1,4 @@
 .bundle
 Gemfile.lock
-dummy.conf
+dummy*.conf
 vendor

@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    var1: v1
+  tasks:
+    - template: src=dummy.conf.j2 dest=./dummy1.conf
+    - template: src=dummy.conf.j2 dest=./dummy2.conf
+    - name: task to be not-changed
+      template: src=dummy.conf.j2 dest=./dummy2.conf
+    - name: task to be skipped
+      ping:
+      when: false

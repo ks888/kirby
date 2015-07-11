@@ -4,4 +4,4 @@
   vars:
     var1: v1
   tasks:
-    - template: src=dummy.conf.j2 dest=./dummy.conf
+    - ping:
