@@ -2,9 +2,11 @@
 from StringIO import StringIO
 from mock import patch
 import os
+import sys
 import unittest
 
-from kirby.callback_plugins.analyze_coverage import CallbackModule
+sys.path.append(os.getcwd() + '/../..')
+from callback_plugins.kirby import CallbackModule
 import utils
 
 

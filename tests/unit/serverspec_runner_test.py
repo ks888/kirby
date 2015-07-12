@@ -1,9 +1,12 @@
 
 from mock import patch
+import os
 import subprocess
+import sys
 import unittest
 
-from kirby.serverspec_runner import ServerspecRunner
+sys.path.append(os.getcwd() + '/../..')
+from callback_plugins.kirby import ServerspecRunner
 
 
 class ServerspecRunnerTest(unittest.TestCase):

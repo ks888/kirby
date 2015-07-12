@@ -1,10 +1,12 @@
 
 import ansible.utils  # unused, but necessary to avoid circular imports
 from ansible.callbacks import display
+import ConfigParser
 import os
+import re
+import subprocess
 
-from kirby.serverspec_runner import ServerspecRunner
-from kirby.setting_manager import SettingManager
+version = '0.0.1'
 
 
 class CallbackModule(object):
@@ -95,3 +97,68 @@ class CallbackModule(object):
                 display('WARNING: serverspec still detects %d failures' % (self.num_failed_tests))
 
             display('*** Kirby End *******')
+
+
+class SettingManager(object):
+    def __init__(self, setting_file=None):
+        self.parser = ConfigParser.SafeConfigParser()
+        if setting_file is not None:
+            self.parser.read(setting_file)
+
+        self.enable_kirby = self._mk_boolean(self._get_config('defaults', 'enable_kirby', 'KIRBY_ENABLE', 'false'))
+        self.serverspec_dir = self._get_config('defaults', 'serverspec_dir', 'KIRBY_SERVERSPEC_DIR', None)
+        self.serverspec_cmd = self._get_config('defaults', 'serverspec_cmd', 'KIRBY_SERVERSPEC_CMD', None)
+
+    def _get_config(self, section, option, env_var, default):
+        value = os.environ.get(env_var, None)
+        if value is not None:
+            return value
+
+        try:
+            value = self.parser.get(section, option)
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+            # use default value
+            pass
+        if value is not None:
+            return value
+
+        return default
+
+    def _mk_boolean(self, value):
+        if value is None:
+            return False
+
+        val = str(value)
+        if val.lower() in ["true", "t", "y", "1", "yes"]:
+            return True
+        else:
+            return False
+
+
+class ServerspecRunner(object):
+    """Run serverspec command and retrieve its results"""
+    pattern = re.compile(r'(\d+) examples?, (\d+) failures?')
+
+    def __init__(self, serverspec_dir, serverspec_cmd):
+        self.serverspec_dir = serverspec_dir
+        self.serverspec_cmd = serverspec_cmd
+
+    def run(self):
+        orig_dir = os.getcwd()
+        os.chdir(self.serverspec_dir)
+
+        try:
+            cmd_result = subprocess.check_output(self.serverspec_cmd, shell=True, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as ex:
+            cmd_result = ex.output
+
+        os.chdir(orig_dir)
+
+        match_result = ServerspecRunner.pattern.search(cmd_result)
+        if match_result is None:
+            return None
+
+        num_test = int(match_result.group(1))
+        num_failed_test = int(match_result.group(2))
+
+        return (num_test, num_failed_test)
