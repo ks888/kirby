@@ -1,6 +1,7 @@
 
 from StringIO import StringIO
 from mock import patch
+from mock import MagicMock
 import os
 import sys
 import unittest
@@ -105,6 +106,16 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_changed_tasks, 1)
         self.assertEqual(callbacks.num_tested_tasks, 0)
         self.assertListEqual(callbacks.not_tested_tasks, ['it\'s me'])
+
+    def test_runner_on_ok_changed_not_defined(self):
+        callbacks = CallbackModule()
+        callbacks.runner.run = MagicMock(side_effect=[(0, 0), None])
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_task_start('it\'s me', False)
+        callbacks.runner_on_ok('localhost', {})
+
+        # Only playbook_on_start() should call it
+        self.assertEqual(callbacks.runner.run.call_count, 1)
 
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
     @patch('sys.stdout', new_callable=StringIO)

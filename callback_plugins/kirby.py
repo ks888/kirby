@@ -65,7 +65,7 @@ class CallbackModule(object):
 
     def runner_on_ok(self, host, res):
         if self.setting_manager.enable_kirby:
-            if res['changed']:
+            if 'changed' in res and res['changed']:
                 result = self.runner.run()
 
                 self.num_changed_tasks += 1
