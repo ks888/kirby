@@ -40,13 +40,14 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertTrue(callbacks.setting_manager.enable_kirby)
 
-    @patch('subprocess.check_output', return_value='2 examples, 2 failures')
+    @patch('subprocess.check_output', return_value='2 examples, 2 failures\nrspec ...')
     def test_playbook_on_start(self, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
 
         self.assertEqual(callbacks.num_tests, 2)
         self.assertEqual(callbacks.num_failed_tests, 2)
+        self.assertEqual(callbacks.failed_tests, ['rspec ...'])
 
     @patch('subprocess.check_output', return_value='')
     def test_playbook_on_start_cmd_output_is_empty(self, mock_subprocess):
@@ -80,8 +81,9 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
         self.assertEqual(callbacks.curr_task_name, 'setup')
 
-    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
-    def test_runner_on_ok_tested_case(self, mock_subprocess):
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures\nrspec 1\nrspec 2', '2 examples, 1 failures\nrspec 2'])
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_runner_on_ok_tested_case(self, mock_stdout, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me', False)
@@ -93,8 +95,13 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_changed_tasks, 1)
         self.assertEqual(callbacks.num_tested_tasks, 1)
 
-    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 2 failures'])
-    def test_runner_on_ok_not_tested_case(self, mock_subprocess):
+        result = mock_stdout.getvalue()
+        self.assertIn('tested by:', result)
+        self.assertIn('rspec 1', result)
+
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures\nrspec 1\nrspec 2', '2 examples, 2 failures\nrspec 1\nrspec 2'])
+    @patch('sys.stdout', new_callable=StringIO)
+    def test_runner_on_ok_not_tested_case(self, mock_stdout, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me', False)
@@ -107,10 +114,14 @@ class AnalyzeCoverageTest(unittest.TestCase):
         self.assertEqual(callbacks.num_tested_tasks, 0)
         self.assertListEqual(callbacks.not_tested_tasks, ['it\'s me'])
 
+        result = mock_stdout.getvalue()
+        self.assertIn('tested by:', result)
+        self.assertNotIn('rspec ', result)
+
     def test_runner_on_ok_changed_not_defined(self):
         callbacks = CallbackModule()
         # want to use runner.run.call_count for assertion
-        callbacks.runner.run = MagicMock(side_effect=[(0, 0), None])
+        callbacks.runner.run = MagicMock(side_effect=[(0, 0, []), None])
         callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me', False)
         callbacks.runner_on_ok('localhost', {})

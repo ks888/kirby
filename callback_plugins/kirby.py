@@ -54,6 +54,7 @@ class CallbackModule(object):
 
             self.num_tests = result[0]
             self.num_failed_tests = result[1]
+            self.failed_tests = result[2]
 
     def playbook_on_setup(self):
         if self.setting_manager.enable_kirby:
@@ -68,11 +69,18 @@ class CallbackModule(object):
             if 'changed' in res and res['changed']:
                 result = self.runner.run()
                 prev_num_failed_tests = self.num_failed_tests
+                prev_failed_tests = self.failed_tests
                 self.num_tests = result[0]
                 self.num_failed_tests = result[1]
+                self.failed_tests = result[2]
 
                 if 'coverage_skip' in self.curr_task_name:
                     return
+
+                diff = set(prev_failed_tests) - set(self.failed_tests)
+                display('tested by: ', color='yellow')
+                for new_passed_test in diff:
+                    display('- %s' % new_passed_test, color='yellow')
 
                 self.num_changed_tasks += 1
                 if self.num_failed_tests < prev_num_failed_tests:
@@ -140,7 +148,8 @@ class SettingManager(object):
 
 class ServerspecRunner(object):
     """Run serverspec command and retrieve its results"""
-    pattern = re.compile(r'(\d+) examples?, (\d+) failures?')
+    num_tests_pattern = re.compile(r'(\d+) examples?, (\d+) failures?')
+    failed_tests_pattern = re.compile(r'^(rspec .*)$', re.MULTILINE)
 
     def __init__(self, serverspec_dir, serverspec_cmd):
         self.serverspec_dir = serverspec_dir
@@ -157,11 +166,19 @@ class ServerspecRunner(object):
 
         os.chdir(orig_dir)
 
-        match_result = ServerspecRunner.pattern.search(cmd_result)
+        match_result = ServerspecRunner.num_tests_pattern.search(cmd_result)
         if match_result is None:
             return None
 
         num_test = int(match_result.group(1))
         num_failed_test = int(match_result.group(2))
+        pos = match_result.end()
 
-        return (num_test, num_failed_test)
+        failed_tests = []
+        while match_result is not None:
+            match_result = ServerspecRunner.failed_tests_pattern.search(cmd_result, pos)
+            if match_result is not None:
+                failed_tests += [match_result.group()]
+                pos = match_result.end()
+
+        return (num_test, num_failed_test, failed_tests)
