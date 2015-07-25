@@ -7,6 +7,11 @@ import subprocess
 
 @given(u'the target host is clean')
 def step_impl(context):
+    env_vars = ['KIRBY_CONFIG', 'KIRBY_ENABLE']
+    for env_var in env_vars:
+        if env_var in os.environ:
+            del os.environ[env_var]
+
     for f in os.listdir('.'):
         if re.search('^dummy.*\.conf$', f):
             os.remove(f)
