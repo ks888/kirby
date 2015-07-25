@@ -109,12 +109,13 @@ class AnalyzeCoverageTest(unittest.TestCase):
 
     def test_runner_on_ok_changed_not_defined(self):
         callbacks = CallbackModule()
+        # want to use runner.run.call_count for assertion
         callbacks.runner.run = MagicMock(side_effect=[(0, 0), None])
         callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me', False)
         callbacks.runner_on_ok('localhost', {})
 
-        # Only playbook_on_start() should call it
+        # Only playbook_on_start() should call run()
         self.assertEqual(callbacks.runner.run.call_count, 1)
 
     @patch('subprocess.check_output', side_effect=['1 examples, 1 failures', '1 examples, 0 failures'])
