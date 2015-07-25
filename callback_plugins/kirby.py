@@ -67,15 +67,18 @@ class CallbackModule(object):
         if self.setting_manager.enable_kirby:
             if 'changed' in res and res['changed']:
                 result = self.runner.run()
+                prev_num_failed_tests = self.num_failed_tests
+                self.num_tests = result[0]
+                self.num_failed_tests = result[1]
+
+                if 'coverage_skip' in self.curr_task_name:
+                    return
 
                 self.num_changed_tasks += 1
-                if result[1] < self.num_failed_tests:
+                if self.num_failed_tests < prev_num_failed_tests:
                     self.num_tested_tasks += 1
                 else:
                     self.not_tested_tasks += [self.curr_task_name]
-
-                self.num_tests = result[0]
-                self.num_failed_tests = result[1]
 
     def playbook_on_stats(self, stats):
         if self.setting_manager.enable_kirby:

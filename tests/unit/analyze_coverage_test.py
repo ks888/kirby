@@ -117,6 +117,19 @@ class AnalyzeCoverageTest(unittest.TestCase):
         # Only playbook_on_start() should call it
         self.assertEqual(callbacks.runner.run.call_count, 1)
 
+    @patch('subprocess.check_output', side_effect=['1 examples, 1 failures', '1 examples, 0 failures'])
+    def test_runner_on_ok_coverage_ignored(self, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_task_start('dummy task (coverage_skip)', False)
+        callbacks.runner_on_ok('localhost', {'changed': True})
+
+        self.assertEqual(callbacks.num_tests, 1)
+        self.assertEqual(callbacks.num_failed_tests, 0)
+
+        self.assertEqual(callbacks.num_changed_tasks, 0)
+        self.assertEqual(callbacks.num_tested_tasks, 0)
+
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failures'])
     @patch('sys.stdout', new_callable=StringIO)
     def test_playbook_on_stats(self, mock_stdout, mock_subprocess):
