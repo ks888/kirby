@@ -41,3 +41,9 @@ class ServerspecRunnerTest(unittest.TestCase):
     def testRun_LargeNumOfTests_CaptureCorrectly(self, mock):
         result = self.runner.run()
         self.assertTupleEqual(result, (100, 99, []))
+
+    def testRun_DirectoryIsNone_ReturnNone(self):
+        self.runner.serverspec_dir = None
+        result = self.runner.run()
+
+        self.assertIsNone(result)
