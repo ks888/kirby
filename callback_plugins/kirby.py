@@ -157,7 +157,7 @@ class ServerspecRunner(object):
 
     def run(self):
         orig_dir = os.getcwd()
-        if self.serverspec_dir is None:
+        if self.serverspec_dir is None or not os.path.isdir(self.serverspec_dir):
             return None
 
         os.chdir(self.serverspec_dir)

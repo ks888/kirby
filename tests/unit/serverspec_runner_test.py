@@ -47,3 +47,9 @@ class ServerspecRunnerTest(unittest.TestCase):
         result = self.runner.run()
 
         self.assertIsNone(result)
+
+    def testRun_DirectoryNotExist_ReturnNone(self):
+        self.runner.serverspec_dir = '/notexist'
+        result = self.runner.run()
+
+        self.assertIsNone(result)
