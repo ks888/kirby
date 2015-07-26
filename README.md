@@ -4,12 +4,12 @@ Code Coverage Tool for Ansible
 
 ## Description
 
-It is usual to measure the code coverage for your source code written in python, Java, and so on. However, it is very few to measure it for your Ansible playbook. Kirby is the tool to support this.
+It is usual to measure the code coverage for your source code written in python, Java, and so on. On the other hand, we usually do not measure the coverage for an Ansible playbook. Kirby is the tool to support this.
 
-Here is the example to measure the code coverage. [Serverspec](http://serverspec.org/) is used as the testing tool.
+Here is the example. This is the playbook to be tested. There are 2 tasks.
 
 ```bash
-~/src/kirby_demo% cat demo1.yml
+~/src/kirby_demo% cat create_2dirs.yml
 ---
 - hosts: localhost
   gather_facts: no
@@ -19,14 +19,22 @@ Here is the example to measure the code coverage. [Serverspec](http://serverspec
 
     - name: create dir2
       file: path=./dir2 state=directory
+```
 
+Here is the [Serverspec](http://serverspec.org/) test. There is 1 test for the first playbook task (create dir1).
+
+```bash
 ~/src/kirby_demo% cat spec/localhost/sample_spec.rb 
 require 'spec_helper'
 
 describe file('./dir1') do
   it { should be_directory }
 end
+```
 
+Now, run the playbook. Kirby shows you the code coverage.
+
+```bash
 ~/src/kirby_demo% ansible-playbook demo1.yml -i "localhost," -c local
 
 PLAY [localhost] **************************************************************
@@ -44,11 +52,9 @@ Not covered:
  - create dir2
 *** Kirby End *******
 localhost                  : ok=2    changed=2    unreachable=0    failed=0   
-
-~/src/kirby_demo% 
 ```
 
-Serverspec runs whenever a task results in *changed* status. If the number of failed tests in serverspec is smaller than the last run, the task is regarded as *tested*. In this example, 1st task is *tested*, but 2nd task is not, so the test coverage is 50%.
+Since there is 2 tasks and only 1 task is tested, the coverage is 50%. See [How it works](#how-it-works) for details.
 
 ## Installation
 
@@ -70,17 +76,13 @@ Make a `kirby.cfg` file in your playbook directory, and write the contents below
 [defaults]
 enable_kirby = yes
 
-serverspec_dir = ./
-serverspec_cmd = bundle exec rake spec
+serverspec_dir = <directory to run serverspec>
+serverspec_cmd = <command to run serverspec>
 ```
-
-`serverspec_cmd` is the command to run serverspec, and `serverspec_dir` is the directory to run it.
 
 ### Run
 
 Run `ansible-playbook` command as usual.
-
-* To measure the code coverage correctly, your target host should be clean, that is, Ansible is yet to setup the target host.
 
 <a name="how-it-works"/>
 ## How it works
