@@ -11,34 +11,40 @@ from callback_plugins.kirby import CallbackModule
 import utils
 
 
-class AnalyzeCoverageTest(unittest.TestCase):
+class CallbackModuleTest(unittest.TestCase):
     def setUp(self):
         utils.reset_kirby_env_vars()
 
-    @patch.dict('os.environ',
-                {'KIRBY_ENABLE': 'yes', 'KIRBY_SERVERSPEC_DIR': '', 'KIRBY_SERVERSPEC_CMD': ''})
-    def test_init_empty_env_var(self):
-        devnull = open(os.devnull, 'w')
-        with patch('sys.stdout', devnull):
-            with patch('sys.stderr', devnull):
-                callbacks = CallbackModule()
+    def testInit_UseDefaultConfigFile_KirbyIsEnabled(self):
+        # default config file (kirby.cfg) will be used
+        callbacks = CallbackModule()
 
         self.assertTrue(callbacks.setting_manager.enable_kirby)
 
-    @patch.dict('os.environ', {'KIRBY_CONFIG': './empty.cfg'})
-    def test_init_not_enough_options(self):
+    @patch.dict('os.environ',
+                {'KIRBY_CONFIG': 'kirby_disabled.cfg'})
+    def testInit_UseEnvVarSpecifiedConfigFile_KirbyIsDisabled(self):
+        callbacks = CallbackModule()
+
+        self.assertFalse(callbacks.setting_manager.enable_kirby)
+        # make sure the config file is read
+        self.assertEqual(callbacks.setting_manager.serverspec_dir, '/opt')
+
+    @patch.dict('os.environ',
+                {'KIRBY_CONFIG': 'notfound.cfg'})
+    def testInit_NonExistConfigFile_KirbyIsDisabled(self):
+        callbacks = CallbackModule()
+
+        self.assertFalse(callbacks.setting_manager.enable_kirby)
+
+    @patch.dict('os.environ', {'KIRBY_CONFIG': 'kirby_insufficient.cfg'})
+    def testInit_InsufficientConfigFile_KirbyIsDisabled(self):
         devnull = open(os.devnull, 'w')
         with patch('sys.stdout', devnull):
             with patch('sys.stderr', devnull):
                 callbacks = CallbackModule()
 
         self.assertFalse(callbacks.setting_manager.enable_kirby)
-
-    def test_init_use_default_config_file(self):
-        # default config file (kirby.cfg) will be used
-        callbacks = CallbackModule()
-
-        self.assertTrue(callbacks.setting_manager.enable_kirby)
 
     @patch('subprocess.check_output', return_value='2 examples, 2 failures\nrspec ...')
     def test_playbook_on_start(self, mock_subprocess):
