@@ -21,6 +21,11 @@ Feature: Get Coverage
         Then stdout will include "0%" as a coverage
         And stdout will include "WARNING: serverspec"
 
+    Scenario: Include handler
+        Given the target host is clean
+        When we run the playbook "1task_1handler.yml"
+        Then stdout will include "50%" as a coverage
+
     Scenario: Ansible failed
         Given the target host is clean
         When we run the playbook "2tasks_1failed.yml"

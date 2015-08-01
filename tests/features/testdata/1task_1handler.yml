@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    var1: v1
+  tasks:
+    - template: src=dummy.conf.j2 dest=./dummy1.conf
+      notify:
+        - another template
+  handlers:
+    - name: another template
+      template: src=dummy.conf.j2 dest=./dummy_no_serverspec_test.conf
