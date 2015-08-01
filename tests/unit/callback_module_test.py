@@ -19,14 +19,14 @@ class CallbackModuleTest(unittest.TestCase):
         # default config file (kirby.cfg) will be used
         callbacks = CallbackModule()
 
-        self.assertTrue(callbacks.setting_manager.enable_kirby)
+        self.assertTrue(callbacks.setting_manager.enable)
 
     @patch.dict('os.environ',
                 {'KIRBY_CONFIG': 'kirby_disabled.cfg'})
     def testInit_UseEnvVarSpecifiedConfigFile_KirbyIsDisabled(self):
         callbacks = CallbackModule()
 
-        self.assertFalse(callbacks.setting_manager.enable_kirby)
+        self.assertFalse(callbacks.setting_manager.enable)
         # make sure the config file is read
         self.assertEqual(callbacks.setting_manager.serverspec_dir, '/opt')
 
@@ -35,7 +35,7 @@ class CallbackModuleTest(unittest.TestCase):
     def testInit_NonExistConfigFile_KirbyIsDisabled(self):
         callbacks = CallbackModule()
 
-        self.assertFalse(callbacks.setting_manager.enable_kirby)
+        self.assertFalse(callbacks.setting_manager.enable)
 
     @patch.dict('os.environ', {'KIRBY_CONFIG': 'kirby_insufficient.cfg'})
     def testInit_InsufficientConfigFile_KirbyIsDisabled(self):
@@ -44,14 +44,14 @@ class CallbackModuleTest(unittest.TestCase):
             with patch('sys.stderr', devnull):
                 callbacks = CallbackModule()
 
-        self.assertFalse(callbacks.setting_manager.enable_kirby)
+        self.assertFalse(callbacks.setting_manager.enable)
 
     @patch('subprocess.check_output', return_value='2 examples, 2 failures')
     def testPlaybookOnStart_RunnerSuccessful_KirbyIsEnabled(self, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
 
-        self.assertTrue(callbacks.setting_manager.enable_kirby)
+        self.assertTrue(callbacks.setting_manager.enable)
 
     @patch('subprocess.check_output', return_value='')
     def testPlaybookOnStart_RunnerFailure_KirbyIsDisabled(self, mock_subprocess):
@@ -60,7 +60,7 @@ class CallbackModuleTest(unittest.TestCase):
             callbacks = CallbackModule()
             callbacks.playbook_on_start()
 
-        self.assertFalse(callbacks.setting_manager.enable_kirby)
+        self.assertFalse(callbacks.setting_manager.enable)
 
     def testPlaybookOnSetup_KirbyIsEnabled_TaskNameSet(self):
         callbacks = CallbackModule()

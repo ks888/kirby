@@ -74,7 +74,7 @@ Make a `kirby.cfg` file in your playbook directory, and write the contents below
 
 ```
 [defaults]
-enable_kirby = yes
+enable = yes
 
 serverspec_dir = <directory to run serverspec>
 serverspec_cmd = <command to run serverspec>

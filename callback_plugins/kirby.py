@@ -19,11 +19,11 @@ class CallbackModule(object):
 
         self.setting_manager = SettingManager(config_file)
 
-        if self.setting_manager.enable_kirby and not self._check_options():
+        if self.setting_manager.enable and not self._check_options():
             display('[kirby] disable kirby...', stderr=True)
-            self.setting_manager.enable_kirby = False
+            self.setting_manager.enable = False
 
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             self.runner = ServerspecRunner(self.setting_manager.serverspec_dir,
                                            self.setting_manager.serverspec_cmd)
 
@@ -44,12 +44,12 @@ class CallbackModule(object):
         return True
 
     def playbook_on_start(self):
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             result = self.runner.run()
 
             if result is None:
                 display('[kirby] serverspec\'s settings are invalid...disable kirby', stderr=True)
-                self.setting_manager.enable_kirby = False
+                self.setting_manager.enable = False
                 return
 
             self.num_tests = result[0]
@@ -57,15 +57,15 @@ class CallbackModule(object):
             self.failed_tests = result[2]
 
     def playbook_on_setup(self):
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             self.curr_task_name = 'setup'
 
     def playbook_on_task_start(self, name, is_conditional):
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             self.curr_task_name = name
 
     def runner_on_ok(self, host, res):
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             if 'changed' in res and res['changed']:
                 result = self.runner.run()
                 prev_num_failed_tests = self.num_failed_tests
@@ -89,7 +89,7 @@ class CallbackModule(object):
                     self.not_tested_tasks += [self.curr_task_name]
 
     def playbook_on_stats(self, stats):
-        if self.setting_manager.enable_kirby:
+        if self.setting_manager.enable:
             display('*** Kirby Results ***')
 
             if self.num_changed_tasks > 0:
@@ -116,7 +116,7 @@ class SettingManager(object):
         if setting_file is not None:
             self.parser.read(setting_file)
 
-        self.enable_kirby = self._mk_boolean(self._get_config('defaults', 'enable_kirby', 'KIRBY_ENABLE', 'false'))
+        self.enable = self._mk_boolean(self._get_config('defaults', 'enable', 'KIRBY_ENABLE', 'false'))
         self.serverspec_dir = self._get_config('defaults', 'serverspec_dir', 'KIRBY_SERVERSPEC_DIR', None)
         self.serverspec_cmd = self._get_config('defaults', 'serverspec_cmd', 'KIRBY_SERVERSPEC_CMD', None)
 
