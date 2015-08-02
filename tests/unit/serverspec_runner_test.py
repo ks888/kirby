@@ -30,6 +30,17 @@ class ServerspecRunnerTest(unittest.TestCase):
         result = self.runner.run()
         self.assertTupleEqual(result, (2, 2, ['rspec ... rspec ...', 'rspec ...']))
 
+    @patch('subprocess.check_output', return_value="1 example, 0 failures\n2 example, 0 failures\n3 examples, 0 failures")
+    def testRun_NoFailedTestParallel_NumTestsIsSet(self, mock):
+        result = self.runner.run()
+        self.assertTupleEqual(result, (3, 0, []))
+
+    @patch('subprocess.check_output',
+           side_effect=subprocess.CalledProcessError(1, '', output="1 example, 1 failure\nrspec ...\n1 examples, 1 failures\nrspec ...\n2 examples, 2 failures"))
+    def testRun_Has2FailedTestsParallel_FailedTestIsSet(self, mock):
+        result = self.runner.run()
+        self.assertTupleEqual(result, (2, 2, ['rspec ...', 'rspec ...']))
+
     @patch('subprocess.check_output',
            side_effect=subprocess.CalledProcessError(1, '', output=""))
     def testRun_InvalidOutput_ReturnNone(self, mock):

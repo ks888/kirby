@@ -185,19 +185,19 @@ class ServerspecRunner(object):
 
         os.chdir(orig_dir)
 
-        match_result = ServerspecRunner.num_tests_pattern.search(cmd_result)
+        # When use serverspec with parallel_tests, the result matches several times.
+        # We need only the last one.
+        match_result = None
+        for match_result in ServerspecRunner.num_tests_pattern.finditer(cmd_result):
+            pass
         if match_result is None:
             return None
 
         num_test = int(match_result.group(1))
         num_failed_test = int(match_result.group(2))
-        pos = match_result.end()
 
         failed_tests = []
-        while match_result is not None:
-            match_result = ServerspecRunner.failed_tests_pattern.search(cmd_result, pos)
-            if match_result is not None:
-                failed_tests += [match_result.group()]
-                pos = match_result.end()
+        for match_result in ServerspecRunner.failed_tests_pattern.finditer(cmd_result):
+            failed_tests += [match_result.group()]
 
         return (num_test, num_failed_test, failed_tests)
