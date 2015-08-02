@@ -1,0 +1,95 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    var1: v1
+  tasks:
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy0.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy1.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy2.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy3.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy4.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy5.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy6.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy7.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy8.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy9.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy10.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy11.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy12.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy13.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy14.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy15.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy16.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy17.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy18.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy19.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy20.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy21.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy22.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy23.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy24.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy25.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy26.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy27.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy28.conf
+
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy29.conf

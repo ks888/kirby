@@ -3,6 +3,7 @@ from behave import given, when, then
 import os
 import re
 import subprocess
+import time
 
 
 @given(u'the target host is clean')
@@ -29,12 +30,17 @@ def step_impl(context):
 @when(u'we run the playbook "{playbook}"')
 def step_impl(context, playbook):
     cmd = 'ansible-playbook %s -i "localhost," -c local' % playbook
+
+    start = time.time()
     try:
         context.cmd_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
         context.cmd_rc = 0
     except subprocess.CalledProcessError as ex:
         context.cmd_output = ex.output
         context.cmd_rc = ex.returncode
+    elapsed = time.time() - start
+
+    context.elapsed = elapsed
 
 @then(u'stdout will include "{coverage}" as a coverage')
 def step_impl(context, coverage):
@@ -54,3 +60,7 @@ def step_impl(context, warning):
 @then(u'stdout will include "{warning}"')
 def step_impl(context, warning):
     assert warning in context.cmd_output
+
+@then(u'elapsed time will be less than "{max_time}" seconds')
+def step_impl(context, max_time):
+    assert context.elapsed < float(max_time)

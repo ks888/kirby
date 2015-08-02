@@ -62,17 +62,41 @@ class CallbackModuleTest(unittest.TestCase):
 
         self.assertFalse(callbacks.setting_manager.enable)
 
-    def testPlaybookOnSetup_KirbyIsEnabled_TaskNameSet(self):
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures'])
+    def testPlaybookOnSetup_KirbyIsEnabled_TaskNameSet(self, mock_subprocess):
         callbacks = CallbackModule()
+        callbacks.playbook_on_start()
         callbacks.playbook_on_setup()
 
         self.assertEqual(callbacks.curr_task_name, 'setup')
 
-    def testPlaybookOnTaskStart_KirbyIsEnabled_TaskNameSet(self):
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures'])
+    def testPlaybookOnTaskStart_KirbyIsEnabled_TaskNameSet(self, mock_subprocess):
         callbacks = CallbackModule()
+        callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me', False)
 
         self.assertEqual(callbacks.curr_task_name, 'it\'s me')
+
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failure'])
+    def testPlaybookOnTaskStart_DirtyFlagSet_RunServerspec(self, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.dirty = True
+        callbacks.playbook_on_task_start('it\'s me', False)
+
+        self.assertEqual(callbacks.num_failed_tests, 1)
+        self.assertEqual(callbacks.dirty, False)
+
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures'])
+    def testPlaybookOnTaskStart_DirtyFlagSetAndCoverageSkip_NotRunServerspec(self, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.dirty = True
+        callbacks.playbook_on_task_start('it\'s me [coverage_skip]', False)
+
+        self.assertEqual(callbacks.num_failed_tests, 2)
+        self.assertEqual(callbacks.dirty, True)
 
     @patch('subprocess.check_output', side_effect=['2 examples, 2 failures\nrspec 1\nrspec 2', '2 examples, 1 failure\nrspec 2'])
     @patch('sys.stdout', new_callable=StringIO)
@@ -120,14 +144,16 @@ class CallbackModuleTest(unittest.TestCase):
         self.assertEqual(callbacks.num_tested_tasks, 0)
         self.assertEqual(callbacks.not_tested_tasks, ['it\'s me'])
 
-    @patch('subprocess.check_output', side_effect=['2 examples, 1 failure', '2 examples, 1 failure'])
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failure', '2 examples, 1 failure'])
     def testRunnerOnOk_CoverageSkipTask_NotIncNumChangedTasks(self, mock_subprocess):
         callbacks = CallbackModule()
         callbacks.playbook_on_start()
         callbacks.playbook_on_task_start('it\'s me (coverage_skip)', False)
         callbacks.runner_on_ok('localhost', {'changed': True})
 
-        self.assertEqual(callbacks.num_changed_tasks, 0)
+        self.assertEqual(callbacks.dirty, True)
+        # since serverspec is not run, # of failed tests should not be updated
+        self.assertEqual(callbacks.num_failed_tests, 2)
 
     def testRunnerOnOk_ChangedNotDefinedTask_RunnerNotCalled(self):
         callbacks = CallbackModule()
@@ -164,3 +190,15 @@ class CallbackModuleTest(unittest.TestCase):
         self.assertIn(' 0%', result)
         self.assertIn('it\'s me', result)
         self.assertIn('WARNING:', result)
+
+    @patch('subprocess.check_output', side_effect=['2 examples, 2 failures', '2 examples, 1 failure'])
+    @patch('sys.stdout', new_callable=StringIO)
+    def testPlaybookOnStats_DirtyFlagSet_RunServerspec(self, mock_stdout, mock_subprocess):
+        callbacks = CallbackModule()
+        callbacks.playbook_on_start()
+        callbacks.playbook_on_task_start('it\'s me [coverage_skip]', False)
+        callbacks.runner_on_ok('localhost', {'changed': True})
+        callbacks.playbook_on_stats(None)
+
+        self.assertEqual(callbacks.num_failed_tests, 1)
+        self.assertEqual(callbacks.dirty, False)

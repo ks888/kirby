@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    var1: v1
+  tasks:
+    - name: apply template (coverage_skip)
+      template: src=dummy.conf.j2 dest=./dummy{{ item }}.conf
+      with_sequence: start=0 end=30

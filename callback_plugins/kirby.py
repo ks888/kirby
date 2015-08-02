@@ -55,27 +55,31 @@ class CallbackModule(object):
             self.num_tests = result[0]
             self.num_failed_tests = result[1]
             self.failed_tests = result[2]
+            self.dirty = False
 
     def playbook_on_setup(self):
-        if self.setting_manager.enable:
-            self.curr_task_name = 'setup'
+        self.playbook_on_task_start('setup', False)
 
     def playbook_on_task_start(self, name, is_conditional):
         if self.setting_manager.enable:
             self.curr_task_name = name
 
+            if self.dirty and 'coverage_skip' not in self.curr_task_name:
+                self._clean()
+
     def runner_on_ok(self, host, res):
         if self.setting_manager.enable:
             if 'changed' in res and res['changed']:
+                if 'coverage_skip' in self.curr_task_name:
+                    self.dirty = True
+                    return
+
                 result = self.runner.run()
                 prev_num_failed_tests = self.num_failed_tests
                 prev_failed_tests = self.failed_tests
                 self.num_tests = result[0]
                 self.num_failed_tests = result[1]
                 self.failed_tests = result[2]
-
-                if 'coverage_skip' in self.curr_task_name:
-                    return
 
                 diff = set(prev_failed_tests) - set(self.failed_tests)
                 display('tested by: ', color='yellow')
@@ -90,6 +94,9 @@ class CallbackModule(object):
 
     def playbook_on_stats(self, stats):
         if self.setting_manager.enable:
+            if self.dirty:
+                self._clean()
+
             display('*** Kirby Results ***')
 
             if self.num_changed_tasks > 0:
@@ -108,6 +115,15 @@ class CallbackModule(object):
                 display('WARNING: serverspec still detects %d failures' % (self.num_failed_tests))
 
             display('*** Kirby End *******')
+
+    def _clean(self):
+        result = self.runner.run()
+
+        self.num_tests = result[0]
+        self.num_failed_tests = result[1]
+        self.failed_tests = result[2]
+
+        self.dirty = False
 
 
 class SettingManager(object):
