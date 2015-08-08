@@ -26,6 +26,13 @@ Feature: Get Coverage
         When we run the playbook "1task_1handler.yml"
         Then stdout will include "50%" as a coverage
 
+    Scenario: Run Parallel Test
+        Given the target host is clean
+        And use "kirby_paralleltest.cfg" as a config file
+        When we run the playbook "2tasks_2changed.yml"
+        Then stdout will include "50%" as a coverage
+        And stdout will include "WARNING: serverspec"
+
     Scenario: Ansible failed
         Given the target host is clean
         When we run the playbook "2tasks_1failed.yml"

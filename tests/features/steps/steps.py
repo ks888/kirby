@@ -17,6 +17,10 @@ def step_impl(context):
         if re.search('^dummy.*\.conf$', f):
             os.remove(f)
 
+@given(u'use "{config_file}" as a config file')
+def step_impl(context, config_file):
+    os.environ['KIRBY_CONFIG'] = config_file
+
 @given(u'env var is used instead of config file')
 def step_impl(context):
     os.environ['KIRBY_ENABLE'] = 'yes'
