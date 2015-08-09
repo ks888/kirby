@@ -103,10 +103,10 @@ class CallbackModule(object):
                 coverage = self.num_tested_tasks * 100.0 / self.num_changed_tasks
             else:
                 coverage = 0.0
-            display('Coverage   : %.0f%% (%d of %d tasks are tested)' % (coverage, self.num_tested_tasks, self.num_changed_tasks))
+            display('Coverage  : %.0f%% (%d of %d tasks are tested)' % (coverage, self.num_tested_tasks, self.num_changed_tasks))
 
             if self.num_tested_tasks < self.num_changed_tasks:
-                display('Not covered:')
+                display('Not tested:')
                 for task_name in self.not_tested_tasks:
                     display(' - %s' % (task_name))
 
