@@ -1,5 +1,7 @@
 # Kirby
 
+![Greeting](http://i.imgur.com/0QkGgYC.png)
+
 Code Coverage Tool for Ansible
 
 ## Description
@@ -35,26 +37,29 @@ end
 Now, run the playbook. Kirby shows you the code coverage.
 
 ```bash
-~/src/kirby_demo% ansible-playbook demo1.yml -i "localhost," -c local
+~/src/kirby_demo% ansible-playbook create_2dirs.yml -i "localhost," -c local
 
-PLAY [localhost] **************************************************************
+PLAY [localhost] ************************************************************** 
 
-TASK: [create dir1] ***********************************************************
+TASK: [create dir1] *********************************************************** 
 changed: [localhost]
+tested by: 
+- rspec ./spec/localhost/sample_spec.rb:4 # File "./dir1" should be directory
 
-TASK: [create dir2] ***********************************************************
+TASK: [create dir2] *********************************************************** 
 changed: [localhost]
+tested by: 
 
 PLAY RECAP ******************************************************************** 
 *** Kirby Results ***
-Coverage   : 50% (1 of 2 tasks are tested)
-Not covered:
+Coverage  : 50% (1 of 2 tasks are tested)
+Not tested:
  - create dir2
 *** Kirby End *******
 localhost                  : ok=2    changed=2    unreachable=0    failed=0   
 ```
 
-Since there is 2 tasks and only 1 task is tested, the coverage is 50%. See [How it works](#how-it-works) for details.
+It tells us the coverage (50%) and the task not tested (create dir2).
 
 ## Installation
 
@@ -76,19 +81,86 @@ Make a `kirby.cfg` file in your playbook directory, and write the contents below
 [defaults]
 enable = yes
 
-serverspec_dir = <directory to run serverspec>
-serverspec_cmd = <command to run serverspec>
+serverspec_dir = ./
+serverspec_cmd = bundle exec rake spec
 ```
+
+* `serverspec_dir` is a directory to run serverspec
+* `serverspec_cmd` is a command to run serverspec
+
+## Usage
 
 ### Run
 
 Run `ansible-playbook` command as usual.
 
-<a name="how-it-works"/>
-## How it works
+* Hint: For the best results, your target system should be clean, that is, a playbook is not executed against the target system yet.
 
-TBA
+### Check Results
+
+Results are like this:
+
+```bash
+~/src/kirby_demo% ansible-playbook create_2dirs.yml -i "localhost," -c local
+
+PLAY [localhost] ************************************************************** 
+
+TASK: [create dir1] *********************************************************** 
+changed: [localhost]
+tested by: 
+- rspec ./spec/localhost/sample_spec.rb:4 # File "./dir1" should be directory
+
+TASK: [create dir2] *********************************************************** 
+changed: [localhost]
+tested by: 
+
+PLAY RECAP ******************************************************************** 
+*** Kirby Results ***
+Coverage  : 50% (1 of 2 tasks are tested)
+Not tested:
+ - create dir2
+*** Kirby End *******
+localhost                  : ok=2    changed=2    unreachable=0    failed=0   
+```
+
+* When a task's result is `changed`, Kirby determines whether the task is tested, and shows you the result(`tested by:`).
+    * If the next line of `tested by:` is empty, the task was not tested. `create dir2` task is this.
+    * If not empty, the task was tested. `create dir1` task is this.
+
+* When a task's result is not `changed`, Kirby removes the task from the coverage, and shows nothing.
+
+* At last, Kirby shows you a summary. It includes the coverage and the list of not tested tasks.
+
+### Improve Coverage
+
+If a task is not tested, let's write a serverspec test for the task.
+
+However, in some cases, you may think the test is not necessary for this task, such as:
+
+* run `ls` using `command` module
+* download a package in preparation for install.
+
+There are 2 options for this:
+
+1. use `changed_when`
+
+    Kirby removes the task from the coverage when a task's result is not `changed`. So, if a `changed` task does not change the target system actually, use [changed_when](http://docs.ansible.com/ansible/playbooks_error_handling.html#overriding-the-changed-result) to control the result.
+
+2. use `coverage_skip`
+
+    Kirby removes the task from the coverage when a task's name includes `coverage_skip`. So, if you sure the test is not necessary, use it like this:
+
+```bash
+- name: create dir2 [coverage_skip]
+  file: path=./dir2 state=directory
+```
+
+## FAQ
+
+* [How does Kirby work?](https://github.com/ks888/kirby/blob/master/FAQ.md#work)
+* [It takes longer time to run a playbook.](https://github.com/ks888/kirby/blob/master/FAQ.md#slow)
+* [How can I disable Kirby?](https://github.com/ks888/kirby/blob/master/FAQ.md#disable)
 
 ## Contributing
 
-Contributions are very welcome, including bug reports, idea sharing, feature requests, and English correction of documents. Feel free to open an issue or a pull request.
+Contributions are very welcome, including bug reports, idea sharing, feature requests, and English correction of documents. Feel free to open an issue or a pull request, or [contact me](https://twitter.com/ks888sk) on twitter.
