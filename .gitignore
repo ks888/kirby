@@ -6,3 +6,6 @@ dist
 htmlcov
 .coverage
 tests/integration/sample.conf
+_builds
+_projects
+_steps

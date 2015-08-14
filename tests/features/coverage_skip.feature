@@ -12,9 +12,9 @@ Feature: Coverage Skip
     Scenario: Lots of skipped tasks (use with_seq)
         Given the target host is clean
         When we run the playbook "30tasks_30skipped_with_seq.yml"
-        Then elapsed time will be less than "15.0" seconds
+        Then elapsed time will be less than "20.0" seconds
 
     Scenario: Lots of skipped tasks (not use with_seq)
         Given the target host is clean
         When we run the playbook "30tasks_30skipped.yml"
-        Then elapsed time will be less than "15.0" seconds
+        Then elapsed time will be less than "20.0" seconds

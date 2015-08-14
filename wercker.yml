@@ -1,0 +1,21 @@
+box: python:2.7
+dev:
+  steps:
+    - pip-install:
+        requirements_file: requirements-dev.txt
+    - internal/watch:
+        code: nosetests -s -d -v -w tests/unit
+        reload: true
+
+build:
+  steps:
+    - install-packages:
+        packages: ruby
+    - bundle-install:
+        cwd: tests/features/testdata
+    - pip-install:
+        requirements_file: requirements-dev.txt
+        cwd: $WERCKER_SOURCE_DIR
+    - script:
+        name: unit test & functional test
+        code: behave tests/features/ --exclude tests/features/testdata

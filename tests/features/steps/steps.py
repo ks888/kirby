@@ -33,7 +33,7 @@ def step_impl(context):
 
 @when(u'we run the playbook "{playbook}"')
 def step_impl(context, playbook):
-    cmd = 'ansible-playbook %s -i "localhost," -c local' % playbook
+    cmd = 'ansible-playbook %s -i inventory' % playbook
 
     start = time.time()
     try:
