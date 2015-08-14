@@ -23,7 +23,7 @@ Here is the example. This is the playbook to be tested. There are 2 tasks.
       file: path=./dir2 state=directory
 ```
 
-Here is the [Serverspec](http://serverspec.org/) test. There is 1 test for the first playbook task (create dir1).
+Here is the [Serverspec](http://serverspec.org/) test. There is 1 test for the first task (create dir1).
 
 ```bash
 ~/src/kirby_demo% cat spec/localhost/sample_spec.rb 
@@ -85,8 +85,8 @@ serverspec_dir = ./
 serverspec_cmd = bundle exec rake spec
 ```
 
-* `serverspec_dir` is a directory to run serverspec
-* `serverspec_cmd` is a command to run serverspec
+* `serverspec_dir` is a directory to run serverspec.
+* `serverspec_cmd` is a command to run serverspec.
 
 ## Usage
 
@@ -124,8 +124,8 @@ localhost                  : ok=2    changed=2    unreachable=0    failed=0
 ```
 
 * When a task's result is `changed`, Kirby determines whether the task is tested, and shows you the result(`tested by:`).
-    * If the next line of `tested by:` is empty, the task was not tested. `create dir2` task is this.
-    * If not empty, the task was tested. `create dir1` task is this.
+    * If the next line of `tested by:` is empty, the task was not tested (`create dir2` task is this).
+    * If not empty, the task was tested (`create dir1` task is this).
 
 * When a task's result is not `changed`, Kirby removes the task from the coverage, and shows nothing.
 
@@ -135,7 +135,7 @@ localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
 If a task is not tested, let's write a serverspec test for the task.
 
-However, in some cases, you may think the test is not necessary for this task, such as:
+However, you may think the test is not necessary for some tasks, such as:
 
 * run `ls` using `command` module
 * download a package in preparation for install.
