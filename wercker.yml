@@ -4,7 +4,7 @@ dev:
     - pip-install:
         requirements_file: requirements-dev.txt
     - internal/watch:
-        code: nosetests -s -d -v -w tests/unit
+        code: nosetests -s -d -v -w tests/unit --with-coverage --cover-erase --cover-inclusive --cover-package=callback_plugins
         reload: true
 
 build:
@@ -16,6 +16,9 @@ build:
     - pip-install:
         requirements_file: requirements-dev.txt
         cwd: $WERCKER_SOURCE_DIR
+    - script:
+        name: unit test
+        code: nosetests -s -d -v -w tests/unit --with-coverage --cover-erase --cover-inclusive --cover-package=callback_plugins
     - script:
         name: functional test
         code: behave tests/features/ --exclude tests/features/testdata
