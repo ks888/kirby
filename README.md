@@ -1,3 +1,5 @@
+[![wercker status](https://app.wercker.com/status/aee56ee616161469fb8e0f50fb4a6047/s/master "wercker status")](https://app.wercker.com/project/bykey/aee56ee616161469fb8e0f50fb4a6047)
+
 # Kirby
 
 ![Greeting](http://i.imgur.com/0QkGgYC.png)

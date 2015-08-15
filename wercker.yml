@@ -20,5 +20,5 @@ build:
         name: unit test
         code: nosetests -s -d -v -w tests/unit --with-coverage --cover-erase --cover-inclusive --cover-package=callback_plugins
     - script:
-        name: functional test
+        name: feature test
         code: behave tests/features/ --exclude tests/features/testdata
