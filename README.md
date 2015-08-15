@@ -125,7 +125,7 @@ Not tested:
 localhost                  : ok=2    changed=2    unreachable=0    failed=0   
 ```
 
-* When a task's result is `changed`, Kirby determines whether the task is tested, and shows you the result(`tested by:`).
+* When a task's result is `changed`, Kirby determines whether the task is tested, and shows you the result.
     * If the next line of `tested by:` is empty, the task was not tested (`create dir2` task is this).
     * If not empty, the task was tested (`create dir1` task is this).
 
@@ -146,16 +146,25 @@ There are 2 options for this:
 
 1. use `changed_when`
 
-    Kirby removes the task from the coverage when a task's result is not `changed`. So, if a `changed` task does not change the target system actually, use [changed_when](http://docs.ansible.com/ansible/playbooks_error_handling.html#overriding-the-changed-result) to control the result.
+    If a `changed` task does not change the target system actually, use [changed_when](http://docs.ansible.com/ansible/playbooks_error_handling.html#overriding-the-changed-result) like this:
+
+    ```bash
+    - command: ls
+      changed_when: False
+    ```
+
+    Kirby removes the task from the coverage when a task's result is not `changed`.
 
 2. use `coverage_skip`
 
-    Kirby removes the task from the coverage when a task's name includes `coverage_skip`. So, if you sure the test is not necessary, use it like this:
+    If you sure a test is not necessary, includes `coverage_skip` in a task's name like this:
 
-```bash
-- name: create dir2 [coverage_skip]
-  file: path=./dir2 state=directory
-```
+    ```bash
+    - name: create dir2 [coverage_skip]
+      file: path=./dir2 state=directory
+    ```
+
+    Kirby removes the task from the coverage when a task's name includes `coverage_skip`.
 
 ## FAQ
 

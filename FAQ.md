@@ -56,14 +56,7 @@ Here are several ways to shorten running time:
 
 1. Use `changed_when`
 
-    To control the task's result, Ansible allows us to use [changed_when](http://docs.ansible.com/ansible/playbooks_error_handling.html#overriding-the-changed-result) in a playbook. In the case below, the task's result is always not `changed`.
-
-    ```bash
-    - command: ls
-      changed_when: False
-    ```
-
-    Since Kirby does not run serverspec if the task's result is not `changed`, use it when possible.
+    Kirby does not run serverspec if the task's result is not `changed`, so use [changed_when](http://docs.ansible.com/ansible/playbooks_error_handling.html#overriding-the-changed-result) to override the task's result if possible.
 
 2. Parallelize Serverspec
 
