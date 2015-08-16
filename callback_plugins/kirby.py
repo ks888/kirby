@@ -6,7 +6,7 @@ import os
 import re
 import subprocess
 
-version = '0.0.1'
+version = '0.1.0'
 
 
 class CallbackModule(object):
