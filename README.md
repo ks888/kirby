@@ -139,7 +139,7 @@ If a task is not tested, let's write a serverspec test for the task.
 
 However, you may think the test is not necessary for some tasks, such as:
 
-* run `ls` using `command` module
+* run `ls` using `command` module.
 * download a package in preparation for install.
 
 There are 2 options for this:
@@ -168,7 +168,7 @@ There are 2 options for this:
 
 ## FAQ
 
-* [How does Kirby work?](https://github.com/ks888/kirby/blob/master/FAQ.md#work)
+* [How does Kirby calculate a coverage?](https://github.com/ks888/kirby/blob/master/FAQ.md#work)
 * [It takes longer time to run a playbook.](https://github.com/ks888/kirby/blob/master/FAQ.md#slow)
 * [How can I disable Kirby?](https://github.com/ks888/kirby/blob/master/FAQ.md#disable)
 

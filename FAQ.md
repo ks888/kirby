@@ -1,21 +1,19 @@
 # FAQ
 
 <a name="work"/>
-## How does Kirby work?
+## How does Kirby calculate a coverage?
 
 Here are 3 points to understand Kirby.
 
 1. After each task execution, Kirby runs serverspec.
 
-    When Kirby is not installed, ansible works like this:
+    Simply put, when Kirby is not installed, ansible works like this:
 
     ![before kirby](http://i.imgur.com/2AbjMfv.jpg)
 
     When Kirby is installed, ansible and Kirby work like this:
 
     ![after kirby](http://i.imgur.com/QXcgdwA.jpg)
-
-    Note that, when the task's result is not `changed`, Kirby does not run serverspec, since its result should be same.
 
 2. Determines whether a task is tested, by comparing serverspec's results.
 
@@ -41,7 +39,9 @@ Here are 3 points to understand Kirby.
 
     If the number of failed tests is smaller than the last one, the task is tested. Otherwise, not tested.
 
-3. Calculate coverage
+3. Calculate a coverage
+
+    After a playbook is executed, Kirby calculates a coverage using the simple formula:
 
     `the number of tested tasks` / `the number of tasks`
 
